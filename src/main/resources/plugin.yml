@@ -1,0 +1,18 @@
+name: MyMcTestPlugin
+version: '${version}'
+main: com.ahmedhnewa.mymctestplugin.Main
+api-version: 1.18
+authors: [ AhmedHnewa, Ahmed ]
+description: Just a plugin for testing purpose
+website: https://ahmedhnewa.com/
+depend: [kotlin-stdlib]
+commands:
+  test:
+    description: Send Test
+    usage: /test
+  ping:
+    description: Get Ping
+    usage: /ping
+  telegram:
+    description: Send telegram msg
+    usage: /telegram <msg>

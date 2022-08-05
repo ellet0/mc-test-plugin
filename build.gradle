@@ -1,0 +1,77 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.6.20'
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+}
+
+group = 'com.ahmedhnewa'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'spigotmc-repo'
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+    }
+    maven {
+        name = 'papermc-repo'
+        url = 'https://papermc.io/repo/repository/maven-public/'
+    }
+    maven {
+        name = 'sonatype'
+        url = 'https://oss.sonatype.org/content/groups/public/'
+    }
+}
+
+dependencies {
+    compileOnly 'org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT'
+//    compileOnly 'io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT'
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+
+    implementation platform("com.squareup.okhttp3:okhttp-bom:4.9.3")
+
+    // define any required OkHttp artifacts without version
+    implementation "com.squareup.okhttp3:okhttp"
+//    shadow 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.21'
+
+//    implementation("com.squareup.okhttp3:logging-interceptor")
+    implementation "org.apache.commons:commons-configuration2:2.7"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+def targetJavaVersion = 17
+
+compileKotlin {
+    kotlinOptions.jvmTarget = targetJavaVersion.toString()
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = targetJavaVersion.toString()
+}
+
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release = targetJavaVersion
+    }
+}
+
+processResources {
+    def props = [version: version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
+}
